@@ -1,9 +1,9 @@
 """
-ASGI config for config project.
+config 项目的 ASGI 配置。
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+本文件对外提供名为 application 的 ASGI 应用对象。
 
-For more information on this file, see
+详细说明请参考：
 https://docs.djangoproject.com/en/6.1/howto/deployment/asgi/
 """
 
