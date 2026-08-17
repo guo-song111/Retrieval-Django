@@ -9,23 +9,37 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 全部配置项及其取值请参考：
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # 以项目根目录为基准构造其他路径。
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# 读取项目根目录下的本地环境变量文件。
+load_dotenv(BASE_DIR / ".env")
 
 # 快速开发配置，不适合直接用于生产环境。
 # 生产部署前请按照 Django 部署检查清单调整。
 
 # 安全提示：生产环境的密钥必须保密。
-SECRET_KEY = 'django-insecure-ov$sju4+tgx0i4k4qfvde3#r69b2e!(++nzity6qf-!hg23&0$'
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "dev-only-key-change-before-deployment",
+)
 
 # 安全提示：生产环境不要开启调试模式。
-DEBUG = True
+# 将环境变量中的字符串转换为布尔值。
+DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
 
-ALLOWED_HOSTS = []
+# 将逗号分隔的主机名转换为列表。
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        "DJANGO_ALLOWED_HOSTS",
+        "127.0.0.1,localhost",
+    ).split(",")
+    if host.strip()
+]
 
 
 # 应用配置。
@@ -38,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "pickup_routes",
 ]
 #中间件
 MIDDLEWARE = [
@@ -103,9 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # 国际化配置。
 # 配置说明：https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
