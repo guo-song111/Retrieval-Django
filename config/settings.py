@@ -88,10 +88,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # 数据库配置。
 # 配置说明：https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+# MySQL 数据库配置。
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQL_DATABASE", "retrieval"),
+        "USER": os.getenv("MYSQL_USER", "retrieval_user"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD", ""),
+        "HOST": os.getenv("MYSQL_HOST", "127.0.0.1"),
+        "PORT": os.getenv("MYSQL_PORT", "3307"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
 }
 
