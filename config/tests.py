@@ -5,7 +5,7 @@
 @version 0.1.0
 """
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 
 class HealthCheckTests(TestCase):
@@ -23,3 +23,34 @@ class HealthCheckTests(TestCase):
         response = self.client.post("/healthz/")
 
         self.assertEqual(response.status_code, 405)
+
+
+class HomePageTests(TestCase):
+    """测试人员取物路径地图首页。"""
+
+    def test_home_page_renders_map_workspace(self) -> None:
+        """首页应该返回地图工作台及 CSRF 表单令牌。"""
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="map"')
+        self.assertContains(response, 'id="import-form"')
+        self.assertContains(response, 'name="csrfmiddlewaretoken"')
+        self.assertContains(response, 'id="map-config"')
+
+    def test_home_page_rejects_non_get_requests(self) -> None:
+        """首页只允许使用 GET 请求。"""
+        response = self.client.post("/")
+
+        self.assertEqual(response.status_code, 405)
+
+    @override_settings(
+        AMAP_JS_KEY="example-key",
+        AMAP_SECURITY_JS_CODE="example-security-code",
+    )
+    def test_home_page_includes_map_configuration(self) -> None:
+        """首页应该将高德配置传给前端。"""
+        response = self.client.get("/")
+
+        self.assertContains(response, "example-key")
+        self.assertContains(response, "example-security-code")

@@ -1,0 +1,158 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="人员取物路径地图">
+    <title>人员取物路径地图</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+    <main class="app-shell">
+        <aside class="control-panel" aria-label="路径控制面板">
+            <header class="app-header">
+                <div class="app-kicker">RETRIEVAL / MAP</div>
+                <h1>人员取物路径</h1>
+                <p class="app-subtitle">路径导入与轨迹查看</p>
+            </header>
+
+            <div
+                id="global-status"
+                class="status-message"
+                role="status"
+                aria-live="polite"
+                hidden
+            ></div>
+
+            <section class="panel-section" aria-labelledby="import-heading">
+                <div class="section-heading">
+                    <div>
+                        <p class="section-index">01</p>
+                        <h2 id="import-heading">导入路径</h2>
+                    </div>
+                </div>
+                <form id="import-form" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    <div class="form-field">
+                        <label class="field-label" for="route-file">TXT 路径文件</label>
+                        <input
+                            id="route-file"
+                            name="file"
+                            class="field-control"
+                            type="file"
+                            accept=".txt,text/plain"
+                            required
+                        >
+                    </div>
+                    <div class="form-field">
+                        <label class="field-label" for="route-name">路径名称（可选）</label>
+                        <input
+                            id="route-name"
+                            name="route_name"
+                            class="field-control"
+                            type="text"
+                            maxlength="100"
+                            placeholder="默认使用文件名"
+                        >
+                    </div>
+                    <button id="import-submit" class="button button-primary" type="submit">
+                        导入路径
+                    </button>
+                </form>
+                <div
+                    id="import-feedback"
+                    class="feedback-message"
+                    role="alert"
+                    aria-live="polite"
+                    hidden
+                ></div>
+            </section>
+
+            <section class="panel-section route-section" aria-labelledby="routes-heading">
+                <div class="section-heading section-heading-row">
+                    <div>
+                        <p class="section-index">02</p>
+                        <h2 id="routes-heading">路径列表</h2>
+                    </div>
+                    <button
+                        id="refresh-routes"
+                        class="button button-quiet"
+                        type="button"
+                        aria-label="刷新路径列表"
+                    >
+                        刷新
+                    </button>
+                </div>
+                <div id="route-list-loading" class="loading-message" hidden>
+                    正在加载路径...
+                </div>
+                <div id="route-list-empty" class="empty-message" hidden>
+                    暂无路径，请先导入 TXT 文件。
+                </div>
+                <ul id="route-list-items" class="route-list" aria-live="polite"></ul>
+            </section>
+
+            <section class="panel-section detail-section" aria-labelledby="detail-heading">
+                <div class="section-heading section-heading-row">
+                    <div>
+                        <p class="section-index">03</p>
+                        <h2 id="detail-heading">轨迹点</h2>
+                    </div>
+                    <span id="active-route-name" class="active-route-name"></span>
+                </div>
+                <div id="detail-loading" class="loading-message" hidden>
+                    正在加载轨迹点...
+                </div>
+                <div id="detail-empty" class="empty-message">
+                    从路径列表选择一条路径。
+                </div>
+                <div id="points-table-container" class="table-container" hidden>
+                    <table class="points-table">
+                        <caption class="visually-hidden">当前路径的轨迹点</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">顺序</th>
+                                <th scope="col">状态</th>
+                                <th scope="col">位置与说明</th>
+                            </tr>
+                        </thead>
+                        <tbody id="points-table-body"></tbody>
+                    </table>
+                </div>
+                <button
+                    id="delete-route"
+                    class="button button-danger"
+                    type="button"
+                    hidden
+                >
+                    删除当前路径
+                </button>
+            </section>
+        </aside>
+
+        <section class="map-pane" aria-label="取物路径地图">
+            <div id="map" class="map-canvas" role="application" aria-label="取物路径地图"></div>
+            <div id="map-state" class="map-state" role="status" aria-live="polite">
+                <div class="map-state-mark" aria-hidden="true"></div>
+                <p id="map-state-title">地图准备中</p>
+                <p id="map-state-message">正在读取地图配置...</p>
+            </div>
+            <div class="map-toolbar" aria-label="地图工具">
+                <button
+                    id="fit-routes"
+                    class="button button-map"
+                    type="button"
+                    aria-label="调整地图视野以显示已选路径"
+                >
+                    调整视野
+                </button>
+                <span id="visible-route-count" class="map-counter">0 条路径</span>
+            </div>
+        </section>
+    </main>
+
+    {{ map_config|json_script:"map-config" }}
+    <script src="{% static 'js/app.js' %}" defer></script>
+</body>
+</html>

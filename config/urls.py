@@ -8,9 +8,10 @@ urlpatterns 列表负责将 URL 映射到视图。详细说明请参考：
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import health_check
+from .views import health_check, home
 
 urlpatterns = [
+    path("", home, name="home"),
     path("admin/", admin.site.urls),
     path("healthz/", health_check, name="health-check"),
     path(

@@ -31,6 +31,10 @@ SECRET_KEY = os.getenv(
 # 将环境变量中的字符串转换为布尔值。
 DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
 
+# 高德地图 Web 端密钥只从本地环境变量读取，不提交到版本库。
+AMAP_JS_KEY = os.getenv("AMAP_JS_KEY", "").strip()
+AMAP_SECURITY_JS_CODE = os.getenv("AMAP_SECURITY_JS_CODE", "").strip()
+
 # 将逗号分隔的主机名转换为列表。
 ALLOWED_HOSTS = [
     host.strip()
@@ -70,7 +74,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -139,6 +143,9 @@ USE_TZ = True
 # 配置说明：https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# 从项目根目录加载前端静态资源。
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # 允许导入接口接收不超过 5 MB 的路径文件，并预留 multipart 请求开销。
 DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
