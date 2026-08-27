@@ -140,6 +140,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# 允许导入接口接收不超过 5 MB 的路径文件，并预留 multipart 请求开销。
+DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+
 
 # 邮件配置。
 # 配置说明：https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
